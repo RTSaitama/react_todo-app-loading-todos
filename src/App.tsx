@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { USER_ID } from './api/todos';
@@ -19,6 +20,18 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const noSpaceQuery = query.trim();
+
+    if (!noSpaceQuery) {
+      return;
+    }
+
+    setQuery('');
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -27,11 +40,13 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className="todoapp__toggle-all active"
+            className={classNames('todoapp__toggle-all', {
+              active: todoListState.todos.every(todo => todo.completed),
+            })}
             data-cy="ToggleAllButton"
           />
 
-          <form>
+          <form onSubmit={() => handleSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
