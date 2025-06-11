@@ -1,12 +1,9 @@
 import React from 'react';
-import classNames from 'classnames';
-import { useFilters } from '../hooks/useFilters';
 import { Todo } from '../types/Todo';
 import { useTodos } from '../hooks/useTodos';
 
 interface TodoCardProps {
   todoListState: ReturnType<typeof useTodos>;
-  todosFilterState: ReturnType<typeof useFilters>;
   todo: Todo;
 }
 
