@@ -1,17 +1,16 @@
+import React from 'react';
 import classNames from 'classnames';
-import { useTodos } from '../hooks/useTodos';
+import { useFilters } from '../hooks/useFilters';
 import { Todo } from '../types/Todo';
+import { useTodos } from '../hooks/useTodos';
 
 interface TodoCardProps {
   todoListState: ReturnType<typeof useTodos>;
+  todosFilterState: ReturnType<typeof useFilters>;
   todo: Todo;
 }
 
-export const TodoCard: React.FC<TodoCardProps> = ({
-  todoListState,
-
-  todo,
-}) => {
+export const TodoCard: React.FC<TodoCardProps> = ({ todoListState, todo }) => {
   const handleToggleSelectedTodo = (todoId: number) => {
     const updatedTodos = todoListState.todos.map(td =>
       td.id === todoId ? { ...td, completed: !td.completed } : td,
@@ -21,12 +20,7 @@ export const TodoCard: React.FC<TodoCardProps> = ({
   };
 
   return (
-    <div
-      data-cy="Todo"
-      className={classNames('todo', {
-        completed: todo.completed === true,
-      })}
-    >
+    <div data-cy="Todo" className="todo">
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -34,22 +28,16 @@ export const TodoCard: React.FC<TodoCardProps> = ({
           className="todo__status"
           checked={todo.completed}
           onChange={() => handleToggleSelectedTodo(todo.id)}
-          aria-label="Toggle todo completion status"
+          aria-label="todostatus-label"
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
-
       <button type="button" className="todo__remove" data-cy="TodoDelete">
         ×
       </button>
-
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
     </div>
   );
 };
