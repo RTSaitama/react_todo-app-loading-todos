@@ -39,12 +39,7 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo, loadingTodoId }) => {
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        disabled={isLoadingThisTodo || isTemp}
-      >
+      <button type="button" className="todo__remove" data-cy="TodoDelete">
         ×
       </button>
     </div>
