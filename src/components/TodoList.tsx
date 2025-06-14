@@ -3,6 +3,10 @@ import { TodoCard } from './TodoCard';
 
 interface TodoListProps {
   todoListState: ReturnType<typeof useTodos>;
+  query?: string;
+  setQuery?: (query: string) => void;
+  loadingTodoId?: number | null;
+  setLoadingTodoId?: (id: number | null) => void;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({ todoListState }) => {
