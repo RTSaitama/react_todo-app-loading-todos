@@ -36,17 +36,13 @@ export const useTodos = () => {
   };
 
   useEffect(() => {
-    const loadTodos = () => {
-      setIsLoading(true);
-      getTodos()
-        .then(setTodos)
-        .catch(() => {
-          showError(ToDoServiceErrors.UnableToLoad);
-        })
-        .finally(() => setIsLoading(false));
-    };
-
-    loadTodos();
+    setIsLoading(true);
+    getTodos()
+      .then(setTodos)
+      .catch(() => {
+        showError(ToDoServiceErrors.UnableToLoad);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   const activeCount = todos.filter(todo => !todo.completed).length;
