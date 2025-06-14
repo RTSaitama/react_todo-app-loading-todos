@@ -1,38 +1,58 @@
-import React from 'react';
-import { Todo } from '../types/Todo';
+import { Todo } from '../types/typedefs';
 import { useTodos } from '../hooks/useTodos';
+import classNames from 'classnames';
 
 interface TodoCardProps {
   todoListState: ReturnType<typeof useTodos>;
   todo: Todo;
+  loadingTodoId: number | null;
+  setLoadingTodoId: (id: number | null) => void;
 }
 
-export const TodoCard: React.FC<TodoCardProps> = ({ todoListState, todo }) => {
-  const handleToggleSelectedTodo = (todoId: number) => {
-    const updatedTodos = todoListState.todos.map(td =>
-      td.id === todoId ? { ...td, completed: !td.completed } : td,
-    );
-
-    todoListState.setTodos(updatedTodos);
-  };
+export const TodoCard: React.FC<TodoCardProps> = ({
+  todoListState,
+  todo,
+  loadingTodoId,
+}) => {
+  const { showError } = todoListState;
+  const isLoadingThisTodo = loadingTodoId === todo.id;
+  const isTemp = todo.id === 0;
 
   return (
-    <div data-cy="Todo" className="todo">
+    <div
+      data-cy="Todo"
+      className={classNames('todo', {
+        completed: todo.completed,
+      })}
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => handleToggleSelectedTodo(todo.id)}
           aria-label="todostatus-label"
+          disabled={isLoadingThisTodo || isTemp}
         />
       </label>
-
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isTemp || isLoadingThisTodo,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        disabled={isLoadingThisTodo || isTemp}
+      >
         ×
       </button>
     </div>

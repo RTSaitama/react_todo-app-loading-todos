@@ -1,36 +1,31 @@
 /* eslint-disable no-console */
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { USER_ID } from './api/todos';
 import { UserWarning } from './UserWarning';
-import { useTodos } from './hooks/useTodos';
-import { FilterStatus, useFilters } from './hooks/useFilters';
+import { useTodos, FilterStatus } from './hooks/useTodos';
 import { TodoList } from './components/TodoList';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
-  const [query, setQuery] = useState<string>('');
   const todoListState = useTodos();
-  const todosFilterState = useFilters(todoListState.todos, query);
-
-  const counter = () => {
-    return todoListState.todos.filter(todo => !todo.completed).length;
-  };
+  const {
+    todos,
+    error,
+    setError,
+    filterStatus,
+    setFilterStatus,
+    loadingTodo,
+    setLoadingTodo,
+    query,
+    setQuery,
+    handleSubmit,
+    activeCount,
+  } = todoListState;
 
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const noSpaceQuery = query.trim();
-
-    if (!noSpaceQuery) {
-      return;
-    }
-
-    setQuery('');
-  };
 
   return (
     <div className="todoapp">
@@ -40,13 +35,11 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className={classNames('todoapp__toggle-all', {
-              active: todoListState.todos.every(todo => todo.completed),
-            })}
+            className="todoapp__toggle-all is-active"
             data-cy="ToggleAllButton"
           />
 
-          <form onSubmit={() => handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
@@ -54,39 +47,40 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={query}
               onChange={event => setQuery(event.target.value)}
+              disabled={loadingTodo !== null}
             />
           </form>
         </header>
 
         <TodoList
           todoListState={todoListState}
-          todosFilterState={todosFilterState}
           query={query}
           setQuery={setQuery}
+          loadingTodoId={loadingTodo}
+          setLoadingTodoId={setLoadingTodo}
         />
 
-        {todoListState.todos.length > 0 ? (
+        {todos.length > 0 ? (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {counter()} items left
+              {activeCount} items left
             </span>
 
             <nav className="filter" data-cy="Filter">
-              {Object.entries(FilterStatus).map(([key, value]) => (
+              {Object.values(FilterStatus).map(value => (
                 <a
-                  key={key}
+                  key={value}
                   href="#/"
                   className={classNames('filter__link', {
-                    selected: todosFilterState.filterStatus === value,
+                    selected: filterStatus === value,
                   })}
                   data-cy={`FilterLink${value}`}
-                  onClick={() => todosFilterState.setFilterStatus(value)}
+                  onClick={() => setFilterStatus(value)}
                 >
                   {value}
                 </a>
               ))}
             </nav>
-
             <button
               type="button"
               className="todoapp__clear-completed"
@@ -99,23 +93,7 @@ export const App: React.FC = () => {
           <>no Todos Left</>
         )}
 
-        <div
-          data-cy="ErrorNotification"
-          className={classNames(
-            'notification is-danger is-light has-text-weight-normal',
-            {
-              hidden: !todoListState.error,
-            },
-          )}
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => todoListState.setError('')}
-          />
-          {todoListState.error}
-        </div>
+        <ErrorNotification error={error} setError={setError} />
       </div>
     </div>
   );
