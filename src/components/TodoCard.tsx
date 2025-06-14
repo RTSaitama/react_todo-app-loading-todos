@@ -1,20 +1,12 @@
 import { Todo } from '../types/typedefs';
-import { useTodos } from '../hooks/useTodos';
 import classNames from 'classnames';
 
 interface TodoCardProps {
-  todoListState: ReturnType<typeof useTodos>;
   todo: Todo;
   loadingTodoId: number | null;
-  setLoadingTodoId: (id: number | null) => void;
 }
 
-export const TodoCard: React.FC<TodoCardProps> = ({
-  todoListState,
-  todo,
-  loadingTodoId,
-}) => {
-  const { showError } = todoListState;
+export const TodoCard: React.FC<TodoCardProps> = ({ todo, loadingTodoId }) => {
   const isLoadingThisTodo = loadingTodoId === todo.id;
   const isTemp = todo.id === 0;
 
