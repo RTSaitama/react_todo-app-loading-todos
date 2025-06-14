@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Todo, TodoError } from '../types/typedefs';
 import { getTodos, USER_ID, postTodo } from '../api/todos';
 
@@ -27,7 +27,6 @@ export const useTodos = () => {
   );
   const [loadingTodo, setLoadingTodo] = useState<number | null>(null);
   const [query, setQuery] = useState<string>('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const showError = (todoError: TodoError) => {
     setError(todoError);
@@ -49,10 +48,6 @@ export const useTodos = () => {
 
     loadTodos();
   }, []);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [todos, loadingTodo]);
 
   const activeCount = todos.filter(todo => !todo.completed).length;
 
