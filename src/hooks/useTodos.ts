@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Todo, TodoError } from '../types/typedefs';
-import { getTodos, USER_ID, postTodo } from '../api/todos';
+import { postTodo, getTodos, USER_ID } from '../api/todosMethods';
 
 export enum FilterStatus {
   ALL = 'All',
@@ -13,6 +13,8 @@ export const ToDoServiceErrors = {
   UnableToLoad: 'Unable to load todos',
   Title: 'Title should not be empty',
   UnableToAddTodo: 'Unable to add a todo',
+  UnableToDeleteTodo: 'Unable to delete a todo',
+  UnableToUpdateTodo: 'Unable to update todos',
 } as const;
 
 const ERROR_DURATION = 3000;
@@ -27,6 +29,7 @@ export const useTodos = () => {
   );
   const [loadingTodo, setLoadingTodo] = useState<number | null>(null);
   const [query, setQuery] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const showError = (todoError: TodoError) => {
     setError(todoError);
@@ -36,14 +39,26 @@ export const useTodos = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    getTodos()
-      .then(setTodos)
-      .catch(() => {
-        showError(ToDoServiceErrors.UnableToLoad);
-      })
-      .finally(() => setIsLoading(false));
+    const loadTodos = () => {
+      setIsLoading(true);
+      getTodos()
+        .then(setTodos)
+        .catch(() => {
+          showError(ToDoServiceErrors.UnableToLoad);
+        })
+        .finally(() => setIsLoading(false));
+    };
+
+    loadTodos();
   }, []);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [todos, loadingTodo]);
+
+  const allCompleted = todos.length > 0 && todos.every(td => td.completed);
+
+  const someCompleted = todos.some(td => td.completed);
 
   const activeCount = todos.filter(todo => !todo.completed).length;
 
@@ -129,8 +144,11 @@ export const useTodos = () => {
     showError,
     query,
     setQuery,
+    inputRef,
     clearQuery,
     handleSubmit,
+    allCompleted,
+    someCompleted,
     activeCount,
     completedCount,
   };

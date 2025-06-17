@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React from 'react';
 import classNames from 'classnames';
-import { USER_ID } from './api/todos';
+import { USER_ID } from './api/todosMethods';
 import { UserWarning } from './UserWarning';
 import { useTodos, FilterStatus } from './hooks/useTodos';
 import { TodoList } from './components/TodoList';
